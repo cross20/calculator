@@ -7,34 +7,34 @@
     <body>
         <main>
             <form>
-                <output name="result"></output>
-                <button>AC</button>
+                <output name="result" ></output>
+                <button type="reset">AC</button>
 
-                <fieldset>
+                <fieldset name="numbers">
                     <legend>Numbers</legend>
-                    <button>0</button>
-                    <button>1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>4</button>
-                    <button>5</button>
-                    <button>6</button>
-                    <button>7</button>
-                    <button>8</button>
-                    <button>9</button>
+                    <button value="0">0</button>
+                    <button value="1">1</button>
+                    <button value="2">2</button>
+                    <button value="3">3</button>
+                    <button value="4">4</button>
+                    <button value="5">5</button>
+                    <button value="6">6</button>
+                    <button value="7">7</button>
+                    <button value="8">8</button>
+                    <button value="9">9</button>
                 </fieldset>
-                <fieldset>
+                <fieldset name="modifiers">
                     <legend>Modifiers</legend>
-                    <button aria-label="positive negative" >+/-</button>
-                    <button>.</button>
+                    <button class="positive-negative" aria-label="positive negative" >+/-</button>
+                    <button class="decimal">.</button>
                 </fieldset>
-                <fieldset>
+                <fieldset name="operators">
                     <legend>Operators</legend>
-                    <button>+</button>
-                    <button aria-label="subtract">-</button>
-                    <button>×</button>
-                    <button>÷</button>
-                    <button>=</button>
+                    <button class="add">+</button>
+                    <button class="subtract" aria-label="subtract">-</button>
+                    <button class="multiply">×</button>
+                    <button class="divide">÷</button>
+                    <button class="equals">=</button>
                 </fieldset>
             </form>
         </main>
