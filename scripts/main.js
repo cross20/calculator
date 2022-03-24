@@ -1,17 +1,24 @@
 const calculator = document.querySelector('form');
 
-let input = [null];
-let inputUBound = 0;
-let result = null;
+let input, inputUBound, overwriteInput, result;
+
+function initializeValues() {
+    input = [null];
+    inputUBound = 0;
+    overwriteInput = false;
+    result = null;
+}
+
+initializeValues();
 
 class Operator {
     /**
-     * @param {string} operator The mathematical operator.
-     * @param {boolean} saveResult Whether the result should be saved or not when the operator invokes the evaluation of an expression.
+     * @param {string} operator Symbol representing a mathematical operator.
+     * @param {boolean} isFinal Whether the result is considered final when calculating the expression for this operator.
      */
-    constructor(operator, saveResult) {
+    constructor(operator, isFinal) {
         this.operator = operator;
-        this.saveResult = saveResult;
+        this.isFinal = isFinal;
     }
 
     toString() {
@@ -40,16 +47,12 @@ calculator.addEventListener('submit', (e) => {
 });
 
 calculator.addEventListener('reset', () => {
-    // TODO: DRY
-    input = 0;
-    result = null;
+    initializeValues();
 });
 
 const output = calculator.querySelector('output');
 
 const numbers = calculator.querySelectorAll('fieldset[name="numbers"] button');
-const modifiers = calculator.querySelector('fieldset[name="modifiers"]');
-const operators = calculator.querySelector('fieldset[name="operators"]');
 
 numbers.forEach((number) => {
     number.addEventListener('click', (e) => {
@@ -63,20 +66,31 @@ numbers.forEach((number) => {
             throw new Error(`Unexpected number '${number}' input into calculator`);
         }
 
-        input[inputUBound] *= 10;
+        input[inputUBound] *= 10 * !overwriteInput;
         input[inputUBound] += number;
         if(isNaN(input[inputUBound])) {
             throw new Error(`Error evaluating input for ${input[inputUBound]}`);
         }
 
-        console.log(`Input is now ${input}`);
+        overwriteInput = false;
+
         output.value = input[inputUBound];
+    });
+});
+
+const modifiers = calculator.querySelector('fieldset[name="modifiers"]');
+// TODO: implement modifiers.
+
+const operators = calculator.querySelectorAll('fieldset[name="operators"] button');
+operators.forEach((operator) => {
+    operator.addEventListener('click', () => {
+        evaluateExpression(supportedOperators[operator.value]);
     });
 });
 
 /**
  * Evaluates the expression and updates the output to reflect the result.
- * @param {string} currentOperator Operator that triggered the evaluation.
+ * @param {Operator} currentOperator Operator that triggered the evaluation.
  */
 function evaluateExpression(currentOperator) {
     if(isNaO(currentOperator)) {
@@ -85,7 +99,6 @@ function evaluateExpression(currentOperator) {
 
     input[++inputUBound] = currentOperator;
     input[++inputUBound] = null;
-    console.log(`Input is now ${input}`);
 
     // Calculate the result.
     result = input[0];
@@ -101,6 +114,7 @@ function evaluateExpression(currentOperator) {
         }
 
         const expression = `${result} ${operator.operator} ${number}`;
+        // TODO: evaluate security implications of using Function.
         result = Function(`"use strict"; return(${expression})`)();
 
         if(isNaN(result)) {
@@ -110,32 +124,9 @@ function evaluateExpression(currentOperator) {
 
     output.value = result;
 
-    // TODO: reset after equals.
+    overwriteInput = currentOperator.isFinal;
+    if(overwriteInput) {
+        input = [result];
+        inputUBound = 0;
+    }
 }
-
-const add = operators.querySelector('.add');
-add.addEventListener('click', () => {
-    evaluateExpression(supportedOperators.add);
-});
-
-const subtract = operators.querySelector('.subtract');
-subtract.addEventListener('click', () => {
-    evaluateExpression(supportedOperators.subtract);
-});
-
-const multiply = operators.querySelector('.multiply');
-multiply.addEventListener('click', () => {
-    evaluateExpression(supportedOperators.multiply);
-});
-
-const divide = operators.querySelector('.divide');
-divide.addEventListener('click', () => {
-    evaluateExpression(supportedOperators.divide);
-});
-
-const equals = operators.querySelector('.equals');
-equals.addEventListener('click', () => {
-    evaluateExpression(supportedOperators.equals);
-});
-
-// TODO: implement modifiers.
